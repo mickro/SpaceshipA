@@ -14,6 +14,8 @@ var mainState = {
     game.load.image('star', 'assets/star.png');
     
     game.load.spritesheet('flame', 'assets/flame_sheet.png', 15, 15);
+
+   
   },
 
   create: function() { 
@@ -27,7 +29,6 @@ var mainState = {
     this.pipes = game.add.group();
     this.pipes.enableBody = true;
     this.pipes.createMultiple(20, 'pipe');
-    
     
     var ship_x = 100;
     var ship_y = 245;
@@ -60,15 +61,27 @@ var mainState = {
     this.score = 0;
 
     this.in_tuto = true;
-    this.labelTitle = this.game.add.text( 60, 50, "SpaceShip A", { font: "20px over_there", fill: "#FFF" });
-    this.labelScore = this.game.add.text( 20, 20, "", { font: "30px Arial", fill: "#ffffff" });
-    this.labelTuto = this.game.add.text( 20, 150, "use UP and DOWN to pilot", { font: "30px Arial", fill: "#FF8080" } )
-    this.labelStart = this.game.add.text( 60, 450, "press SPACE to start", { font: "30px Arial", fill: "#80FF80" } )
+
+    var x_centred = game.world.width/2, y = game.world.height/2;
+
+    this.labelTitle = this.game.add.text( x_centred, 50, "SpaceShip A", { font: "20px over_there", fill: "#FFF" });
+    this.labelTitle.anchor.setTo(0.5, 0.5);
+
+    this.labelScore = this.game.add.text( x_centred, 20, "", { font: "30px Arial", fill: "#ffffff" });
+    this.labelScore.anchor.setTo(0.5, 0.5);
+
+    this.labelTuto = this.game.add.text( x_centred, 150, "use UP and DOWN to pilot", { font: "30px Arial", fill: "#FF8080" } )
+    this.labelTuto.anchor.setTo(0.5, 0.5);
+
+    this.labelStart = this.game.add.text( x_centred, 450, "press SPACE to start", { font: "30px Arial", fill: "#80FF80" } )
+    this.labelStart.anchor.setTo(0.5, 0.5);
 
     this.best_score = window.localStorage.getItem('best_score') || 0;
 
     if (this.best_score > 0 )
-      this.labelBestScore = this.game.add.text( 130, 410, "BEST SCORE: " + this.best_score, { font: "20px Arial", fill: "gold" } );
+
+      this.labelBestScore = this.game.add.text( x_centred, 410, "BEST SCORE: " + this.best_score, { font: "20px Arial", fill: "gold", align: "center"} );
+      this.labelBestScore.anchor.setTo(0.5, 0.5);
   },
 
   skipTuto: function() {
