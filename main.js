@@ -6,20 +6,16 @@ var mainState = {
   preload: function () {
     game.stage.backgroundColor = '#113';
 
-    game.load.image('ship', 'assets/ship.png');
+    game.load.spritesheet('ship', 'assets/ship_sheet.png', 31, 15);
     game.load.image('pipe', 'assets/pipe.png');
     game.load.image('star', 'assets/star.png');
     
     game.load.spritesheet('flame', 'assets/flame_sheet.png', 15, 15);
-
-    game.load.audio('jump', 'assets/jump.wav'); 
   },
 
   create: function() { 
     game.physics.startSystem(Phaser.Physics.ARCADE);
     
-    this.jumpSound = game.add.audio('jump');
-
     this.stars = game.add.group();
     this.stars.enableBody = true;
     this.stars.createMultiple(20, 'star');
@@ -29,19 +25,23 @@ var mainState = {
     this.pipes.enableBody = true;
     this.pipes.createMultiple(20, 'pipe');
     this.timer = this.game.time.events.loop(2500, this.addRowOfPipes, this);
-
-
     
     var ship_x = 100;
     var ship_y = 245;
     this.flame = this.game.add.sprite(ship_x, ship_y -8, 'flame');
-    this.flame.animations.add('boom', [1, 2, 3, 2]);
-    this.flame.animations.play('boom', 10, true);
-    
+    this.flame.animations.add('flame_burn', [0, 1, 2, 1]);
+    this.flame.animations.add('flame_stop', [0, 1, 2, 2]);
+    this.flame.animations.play('flame_burn', 10, true);
+
     this.ship = this.game.add.sprite(ship_x, ship_y, 'ship');
+    this.ship.animations.add('ship_boom', [0, 1, 2, 3]);
     game.physics.arcade.enable(this.ship);
+   
+
     this.ship.body.gravity.y = 0;
     this.ship.anchor.setTo(-0.2, 0.5);
+    this.ship.body.tilePadding.x = 10;
+    this.ship.body.tilePadding.y = 10;
 
     // init keyboard
     var upKey = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
@@ -153,6 +153,8 @@ var mainState = {
 
     // kick out the ship
     this.ship.body.velocity.x = PIPE_VELOCITY;
+    this.ship.animations.play('ship_boom', 4, false);
+    this.flame.animations.play('flame_stop', 4, false);
   },
 
   addRowOfPipes: function() {
