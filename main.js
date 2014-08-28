@@ -68,9 +68,14 @@ var mainState = {
   skipTuto: function() {
     if (this.in_tuto) {
       this.in_tuto = false;
-      this.labelTitle.text = "";
+      //this.labelTitle.text = "";
       this.labelTuto.text = "";
       this.labelStart.text = "";
+
+      this.game.add.tween(this.labelTitle).to( { x: -460 }, 2000, Phaser.Easing.Bounce.Out, true, 2250);
+
+
+
       this.startPipes();
     }
   },
