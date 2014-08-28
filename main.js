@@ -1,6 +1,8 @@
 var game = new Phaser.Game(400, 490, Phaser.AUTO, 'gameDiv');
 const PIPE_VELOCITY = -200;
 
+var in_tuto = true;
+
 var mainState = {
 
   preload: function () {
@@ -24,7 +26,7 @@ var mainState = {
     this.pipes = game.add.group();
     this.pipes.enableBody = true;
     this.pipes.createMultiple(20, 'pipe');
-    this.timer = this.game.time.events.loop(2500, this.addRowOfPipes, this);
+    
     
     var ship_x = 100;
     var ship_y = 245;
@@ -50,8 +52,32 @@ var mainState = {
     var downKey = this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
     downKey.onDown.add(this.goDown, this);
 
+    var spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    spaceKey.onDown.add(this.skipTuto, this);
+
+    // init text
     this.score = 0;
-    this.labelScore = this.game.add.text(20, 20, "0", { font: "30px Arial", fill: "#ffffff" });
+
+    this.in_tuto = true;
+    this.labelTitle = this.game.add.text(60, 50, "SpaceShip A", { font: "20px over_there", fill: "#FFF" });
+    this.labelScore = this.game.add.text(20, 20, "", { font: "30px Arial", fill: "#ffffff" });
+    this.labelTuto = this.game.add.text( 20, 150, "use UP and DOWN to pilot", { font: "30px Arial", fill: "#FF8080" } )
+    this.labelStart = this.game.add.text( 60, 450, "press SPACE to start", { font: "30px Arial", fill: "#80FF80" } )
+  },
+
+  skipTuto: function() {
+    if (this.in_tuto) {
+      this.in_tuto = false;
+      this.labelTitle.text = "";
+      this.labelTuto.text = "";
+      this.labelStart.text = "";
+      this.startPipes();
+    }
+  },
+  
+
+  startPipes: function() {
+    this.timer = this.game.time.events.loop(2500, this.addRowOfPipes, this);
   },
 
   update: function() {

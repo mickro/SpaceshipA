@@ -1,0 +1,9 @@
+@font-face {
+    font-family: over_there;
+    src: url('./assets/over_there.ttf');
+}
+
+.fontPreload{
+    position:absolute;
+    left:-100px;
+}
