@@ -3,6 +3,7 @@ const PIPE_VELOCITY = -200;
 
 var in_tuto = true;
 var best_score;
+var pipe_to_score = false;
 
 var mainState = {
 
@@ -67,8 +68,7 @@ var mainState = {
     this.labelTitle = this.game.add.text( x_centred, 50, "SpaceShip A", { font: "20px over_there", fill: "#FFF" });
     this.labelTitle.anchor.setTo(0.5, 0.5);
 
-    this.labelScore = this.game.add.text( x_centred, 20, "", { font: "30px Arial", fill: "#ffffff" });
-    this.labelScore.anchor.setTo(0.5, 0.5);
+    this.labelScore = this.game.add.text( 20, 20, "", { font: "30px Arial", fill: "#ffffff" });
 
     this.labelTuto = this.game.add.text( x_centred, 150, "use UP and DOWN to pilot", { font: "30px Arial", fill: "#FF8080" } )
     this.labelTuto.anchor.setTo(0.5, 0.5);
@@ -112,6 +112,14 @@ var mainState = {
 
       if (this.ship.angle > 0)
         this.ship.angle -= 1;
+
+      if (this.pipe_to_score === true) {
+        if ( (this.current_pipe.x + this.current_pipe.width) < this.ship.x) {
+          this.pipe_to_score = false;
+          this.score += 1;
+          this.labelScore.text = this.score;
+        } 
+      }
     }
 
     this.flame.x =this.ship.x;
@@ -166,6 +174,7 @@ var mainState = {
     pipe.body.velocity.x = PIPE_VELOCITY;     
     pipe.checkWorldBounds = true;
     pipe.outOfBoundsKill = true;
+    return pipe;
   },
 
   hitPipe: function() {  
@@ -185,17 +194,19 @@ var mainState = {
       this.best_score = this.score;
       window.localStorage.setItem('best_score', this.best_score);
     }
+
+    this.pipe_to_score = false;
   },
 
   addRowOfPipes: function() {
     var hole = Math.floor(Math.random()*5)+1;
 
     for (var i = 0; i < 8; i++)
-      if (i != hole && i != hole +1) 
-        this.addOnePipe(400, i*60+10);   
+      if (i != hole && i != hole +1) {
+        this.current_pipe = this.addOnePipe(400, i*60+10);
+      }
 
-    this.score += 1;
-    this.labelScore.text = this.score;
+    this.pipe_to_score = true;
 
      game.stage.backgroundColor = '#111';
      setTimeout(function(){game.stage.backgroundColor = '#113';}, 150);
