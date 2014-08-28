@@ -2,6 +2,7 @@ var game = new Phaser.Game(400, 490, Phaser.AUTO, 'gameDiv');
 const PIPE_VELOCITY = -200;
 
 var in_tuto = true;
+var best_score;
 
 var mainState = {
 
@@ -59,23 +60,24 @@ var mainState = {
     this.score = 0;
 
     this.in_tuto = true;
-    this.labelTitle = this.game.add.text(60, 50, "SpaceShip A", { font: "20px over_there", fill: "#FFF" });
-    this.labelScore = this.game.add.text(20, 20, "", { font: "30px Arial", fill: "#ffffff" });
+    this.labelTitle = this.game.add.text( 60, 50, "SpaceShip A", { font: "20px over_there", fill: "#FFF" });
+    this.labelScore = this.game.add.text( 20, 20, "", { font: "30px Arial", fill: "#ffffff" });
     this.labelTuto = this.game.add.text( 20, 150, "use UP and DOWN to pilot", { font: "30px Arial", fill: "#FF8080" } )
     this.labelStart = this.game.add.text( 60, 450, "press SPACE to start", { font: "30px Arial", fill: "#80FF80" } )
+
+    this.best_score = window.localStorage.getItem('best_score') || 0;
+
+    if (this.best_score > 0 )
+      this.labelBestScore = this.game.add.text( 130, 410, "BEST SCORE: " + this.best_score, { font: "20px Arial", fill: "gold" } );
   },
 
   skipTuto: function() {
     if (this.in_tuto) {
       this.in_tuto = false;
-      //this.labelTitle.text = "";
       this.labelTuto.text = "";
       this.labelStart.text = "";
-
+      this.labelBestScore.text = "";
       this.game.add.tween(this.labelTitle).to( { x: -460 }, 2000, Phaser.Easing.Bounce.Out, true, 2250);
-
-
-
       this.startPipes();
     }
   },
@@ -107,16 +109,9 @@ var mainState = {
     if (this.ship.alive == false) return;
     
     this.ship.body.velocity.y -= 50;
-
     if (this.ship.body.velocity.y < -250) this.ship.body.velocity.y = -150;
-      
-    // Create an animation on the ship
     var animation = game.add.tween(this.ship);
-
-    // Set the animation to change the angle of the sprite to -20° in 100 milliseconds
     animation.to({angle: -20}, 100);
-
-    // And start the animation
     animation.start();
   },
   
@@ -124,16 +119,9 @@ var mainState = {
     if (this.ship.alive == false) return;
     
     this.ship.body.velocity.y += 50;
-    
     if (this.ship.body.velocity.y > 250) this.ship.body.velocity.y = 250;
-
-    // Create an animation on the ship
     var animation = game.add.tween(this.ship);
-
-    // Set the animation to change the angle of the sprite to -20° in 100 milliseconds
     animation.to({angle: 20}, 100);
-
-    // And start the animation
     animation.start();
   },
 
@@ -158,9 +146,8 @@ var mainState = {
   },
 
   addOnePipe: function(x, y) {
-    var pipe = this.pipes.getFirstDead();
-  
-    var hole = Math.floor(Math.random()*5)+1;
+    var pipe = this.pipes.getFirstDead();  
+    var hole = Math.floor( Math.random() * 5 ) + 1;
 
     pipe.reset(x, y);
     pipe.body.velocity.x = PIPE_VELOCITY;     
@@ -169,23 +156,22 @@ var mainState = {
   },
 
   hitPipe: function() {  
-    // If the ship has already hit a pipe, we have nothing to do
     if (this.ship.alive == false) return;
 
-    // Set the alive property of the ship to false
     this.ship.alive = false;
-    
     this.ship.body.gravity.y = 0;
     this.ship.body.velocity.y = 0;
-
-    // Prevent new pipes from appearing
     game.time.events.remove(this.timer);
     game.time.events.remove(this.timerStars);
 
-    // kick out the ship
     this.ship.body.velocity.x = PIPE_VELOCITY;
     this.ship.animations.play('ship_boom', 4, false);
     this.flame.animations.play('flame_stop', 4, false);
+
+    if (this.best_score < this.score) {
+      this.best_score = this.score;
+      window.localStorage.setItem('best_score', this.best_score);
+    }
   },
 
   addRowOfPipes: function() {
