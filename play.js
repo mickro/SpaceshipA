@@ -5,7 +5,7 @@ var play_state = {
     this.stars = game.add.group();
     this.stars.enableBody = true;
     this.stars.createMultiple(20, 'star');
-    this.timerStars = this.game.time.events.loop(500, this.addStar, this);
+    this.timerStars = game.time.events.loop(500, this.addStar, this);
     
     this.pipes = game.add.group();
     this.pipes.enableBody = true;
@@ -13,12 +13,12 @@ var play_state = {
     
     var ship_x = 100;
     var ship_y = 245;
-    this.flame = this.game.add.sprite(ship_x, ship_y -8, 'flame');
+    this.flame = game.add.sprite(ship_x, ship_y -8, 'flame');
     this.flame.animations.add('flame_burn', [0, 1, 2, 1]);
     this.flame.animations.add('flame_stop', [0, 1, 2, 2]);
     this.flame.animations.play('flame_burn', 10, true);
 
-    this.ship = this.game.add.sprite(ship_x, ship_y, 'ship');
+    this.ship = game.add.sprite(ship_x, ship_y, 'ship');
     this.ship.animations.add('ship_boom', [0, 1, 2, 3]);
     game.physics.arcade.enable(this.ship);
    
@@ -29,55 +29,55 @@ var play_state = {
     this.ship.body.tilePadding.y = 10;
 
     // init keyboard
-    var upKey = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+    var upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
     upKey.onDown.add(this.goUp, this);
 
-    var downKey = this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+    var downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
     downKey.onDown.add(this.goDown, this);
 
-    var spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    var spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     spaceKey.onDown.add(this.skipTuto, this);
 
     // init text
-    this.score = 0;
+    score = 0;
 
-    this.in_tuto = true;
+    in_tuto = true;
 
     var x_centred = game.world.width/2, y = game.world.height/2;
 
-    this.labelTitle = this.game.add.text( x_centred, 50, "SpaceShip A", { font: "20px over_there", fill: "#FFF" });
+    this.labelTitle = game.add.text( x_centred, 50, "SpaceShip A", { font: "20px over_there", fill: "#FFF" });
     this.labelTitle.anchor.setTo(0.5, 0.5);
 
-    this.labelScore = this.game.add.text( 20, 20, "", { font: "30px Arial", fill: "#ffffff" });
+    this.labelScore = game.add.text( 20, 20, "", { font: "30px Arial", fill: "#ffffff" });
 
-    this.labelTuto = this.game.add.text( x_centred, 150, "use UP and DOWN to pilot", { font: "30px Arial", fill: "#FF8080" } )
+    this.labelTuto = game.add.text( x_centred, 150, "use UP and DOWN to pilot", { font: "30px Arial", fill: "#FF8080" } )
     this.labelTuto.anchor.setTo(0.5, 0.5);
 
-    this.labelStart = this.game.add.text( x_centred, 450, "press SPACE to start", { font: "30px Arial", fill: "#80FF80" } )
+    this.labelStart = game.add.text( x_centred, 450, "press SPACE to start", { font: "30px Arial", fill: "#80FF80" } )
     this.labelStart.anchor.setTo(0.5, 0.5);
 
-    this.best_score = window.localStorage.getItem('best_score') || 0;
+    best_score = window.localStorage.getItem('best_score') || 0;
 
-    if (this.best_score > 0 )
-
-      this.labelBestScore = this.game.add.text( x_centred, 410, "BEST SCORE: " + this.best_score, { font: "20px Arial", fill: "gold", align: "center"} );
+    if (best_score > 0 ) {
+      this.labelBestScore = game.add.text( x_centred, 410, "BEST SCORE: " + best_score, { font: "20px Arial", fill: "gold", align: "center"} );
       this.labelBestScore.anchor.setTo(0.5, 0.5);
+    }
   },
 
   skipTuto: function() {
-    if (this.in_tuto) {
-      this.in_tuto = false;
+    if (in_tuto) {
+      in_tuto = false;
       this.labelTuto.text = "";
       this.labelStart.text = "";
-      this.labelBestScore.text = "";
-      this.game.add.tween(this.labelTitle).to( { x: -460 }, 2000, Phaser.Easing.Bounce.Out, true, 2250);
+      if (this.labelBestScore) this.labelBestScore.text = "";
+      game.add.tween(this.labelTitle).to( { x: -460 }, 2000, Phaser.Easing.Bounce.Out, true, 2250);
       this.startPipes();
     }
   },
   
 
   startPipes: function() {
-    this.timer = this.game.time.events.loop(2500, this.addRowOfPipes, this);
+    this.timer = game.time.events.loop(2500, this.addRowOfPipes, this);
   },
 
   update: function() {
@@ -93,17 +93,17 @@ var play_state = {
       if (this.ship.angle > 0)
         this.ship.angle -= 1;
 
-      if (this.pipe_to_score === true) {
+      if (pipe_to_score === true) {
         if ( (this.current_pipe.x + this.current_pipe.width) < this.ship.x) {
-          this.pipe_to_score = false;
-          this.score += 1;
-          this.labelScore.text = this.score;
+          pipe_to_score = false;
+          score += 1;
+          this.labelScore.text = score;
         } 
       }
     }
 
-    this.flame.x =this.ship.x;
-    this.flame.y =this.ship.y -8;
+    this.flame.x = this.ship.x;
+    this.flame.y = this.ship.y -8;
   },
 
   goUp: function() {
@@ -170,12 +170,12 @@ var play_state = {
     this.ship.animations.play('ship_boom', 4, false);
     this.flame.animations.play('flame_stop', 4, false);
 
-    if (this.best_score < this.score) {
-      this.best_score = this.score;
-      window.localStorage.setItem('best_score', this.best_score);
+    if (best_score < score) {
+      best_score = score;
+      window.localStorage.setItem('best_score', best_score);
     }
 
-    this.pipe_to_score = false;
+    pipe_to_score = false;
   },
 
   addRowOfPipes: function() {
@@ -186,7 +186,7 @@ var play_state = {
         this.current_pipe = this.addOnePipe(400, i*60+10);
       }
 
-    this.pipe_to_score = true;
+    pipe_to_score = true;
 
      game.stage.backgroundColor = '#111';
      setTimeout(function(){game.stage.backgroundColor = '#113';}, 150);

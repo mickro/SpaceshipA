@@ -4,6 +4,7 @@ const PIPE_VELOCITY = -200;
 var in_tuto = true;
 var best_score;
 var pipe_to_score = false;
+var score;
 
 game.state.add('load', load_state);
 game.state.add('play', play_state);  
