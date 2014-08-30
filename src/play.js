@@ -11,18 +11,15 @@ var play_state = {
     this.pipes.enableBody = true;
     this.pipes.createMultiple(20, 'pipe');
     
-    var ship_x = 100;
-    var ship_y = 245;
-    this.flame = game.add.sprite(ship_x, ship_y -8, 'flame');
+    this.flame = game.add.sprite(SHIP_X, SHIP_Y -8, 'flame');
     this.flame.animations.add('flame_burn', [0, 1, 2, 1]);
     this.flame.animations.add('flame_stop', [0, 1, 2, 2]);
     this.flame.animations.play('flame_burn', 10, true);
 
-    this.ship = game.add.sprite(ship_x, ship_y, 'ship');
+    this.ship = game.add.sprite(SHIP_X, SHIP_Y, 'ship');
     this.ship.animations.add('ship_boom', [0, 1, 2, 3]);
     game.physics.arcade.enable(this.ship);
    
-
     this.ship.body.gravity.y = 0;
     this.ship.anchor.setTo(-0.2, 0.5);
     this.ship.body.tilePadding.x = 10;
@@ -39,12 +36,8 @@ var play_state = {
     spaceKey.onDown.add(this.skipTuto, this);
 
     // init touch screen
-    //var touchMove = game.input.addMoveCallback
-    //this.game.input.activePointer.isDown
-
     this.downHandler = game.input.onDown.add(this.onDownInput, this);
     this.upHandler = game.input.onUp.add(this.onUpInput, this);
-
 
     // init text
     score = 0;
@@ -58,10 +51,10 @@ var play_state = {
 
     this.labelScore = game.add.text( 20, 20, "", { font: "30px Arial", fill: "#ffffff" });
 
-    this.labelTuto = game.add.text( x_centred, 150, "use UP and DOWN to pilot", { font: "30px Arial", fill: "#FF8080" } )
+    this.labelTuto = game.add.text( x_centred, 150, label_tuto_text, { font: "30px Arial", fill: "#FF8080" } )
     this.labelTuto.anchor.setTo(0.5, 0.5);
 
-    this.labelStart = game.add.text( x_centred, 450, "press SPACE to start", { font: "30px Arial", fill: "#80FF80" } )
+    this.labelStart = game.add.text( x_centred, 450, label_start_text, { font: "30px Arial", fill: "#80FF80" } )
     this.labelStart.anchor.setTo(0.5, 0.5);
 
     best_score = window.localStorage.getItem('best_score') || 0;
@@ -84,42 +77,26 @@ var play_state = {
     this.checkTouch();
   },
 
-  checkTouch: function () {
-    // test move on Y
-    if (this.on_up_y && this.on_down_y) {
-      var delta_y =  this.on_up_y - this.on_down_y;
-      if( Math.abs(delta_y) > 15 ) {
-        if (delta_y > 0) {
-          if (delta_y > 200) {
-            this.goDown();
-            this.goDown();
-            this.goDown();
-          } else if (delta_y > 60) {
-            this.goDown();
-            this.goDown();
-          } else {
-            this.goDown();
-          }
-            
-        } else {
-          if (-delta_y > 200) {
-            this.goUp();
-            this.goUp();
-            this.goUp();
-          } else if (-delta_y > 60) {
-            this.goUp();
-            this.goUp();
-          } else {
-            this.goUp();
-          }
-        }
+  resetTouch: function() {
+    this.on_up_x = undefined;
+    this.on_down_x = undefined;
+    this.on_up_y = undefined;
+    this.on_down_y = undefined;
+  },
 
-        this.on_up_y = undefined;
-        this.on_down_y = undefined;
-      } else {
+  checkTouch: function () {
+    // test move on X
+    if (this.on_up_x && this.on_down_x && this.on_up_y && this.on_down_y) {
+      var delta_y =  this.on_up_y - this.on_down_y;
+      var delta_x =  this.on_up_x - this.on_down_x;
+      if ((Math.abs(delta_y) < MAX_TOUCH_DELTA ) && (delta_x > MAX_TOUCH_DELTA)) {
         this.skipTuto();
+      } else if ( (Math.abs(delta_y) < MAX_TOUCH_DELTA) && (Math.abs(delta_x) < MAX_TOUCH_DELTA)) {
+        if (this.on_up_y > this.ship.y + 8) this.goDown()
+          else this.goUp();
       }
     }
+    this.resetTouch();
   },
 
   skipTuto: function() {
