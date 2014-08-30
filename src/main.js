@@ -1,6 +1,5 @@
-var game = new Phaser.Game(400, 490, Phaser.AUTO, 'gameDiv');
-var isMobileDevice = navigator.userAgent.match(/iPad|iPhone|iPod|Android/i) != null 
-    || screen.width <= 480;
+ var isMobileDevice = navigator.userAgent.match(/iPad|iPhone|iPod|Android/i) != null 
+      || screen.width <= 480;
 const PIPE_VELOCITY = -200;
 const MAX_TOUCH_DELTA = 15;
 
@@ -14,7 +13,11 @@ var score;
 
 var label_tuto_text = isMobileDevice? "TAP to pilot" : "use UP and DOWN to pilot";
 var label_start_text = isMobileDevice? ">>>> >  >  to start" : "press SPACE to start";
+var game;
 
-game.state.add('load', load_state);
-game.state.add('play', play_state);  
-game.state.start('load'); 
+  game = new Phaser.Game(400, 490, Phaser.AUTO, 'gameDiv');
+
+  
+  game.state.add('load', load_state);
+  game.state.add('play', play_state);
+  game.state.start('load');

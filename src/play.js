@@ -1,4 +1,12 @@
 var play_state = {
+  preload: function() {
+    game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    game.scale.setShowAll();
+    game.scale.pageAlignHorizontally = true;
+    game.scale.pageAlignVeritcally = true;
+    game.scale.refresh();
+  },
+
   create: function() { 
     game.physics.startSystem(Phaser.Physics.ARCADE);
     
@@ -66,13 +74,13 @@ var play_state = {
   },
 
   onDownInput: function() {
-    this.on_down_x = game.input.activePointer.clientX;
-    this.on_down_y = game.input.activePointer.clientY;
+    this.on_down_x = game.input.activePointer.worldX;
+    this.on_down_y = game.input.activePointer.worldY;
   },
 
   onUpInput: function() {
-    this.on_up_x = game.input.activePointer.clientX;
-    this.on_up_y = game.input.activePointer.clientY;
+    this.on_up_x = game.input.activePointer.worldX;
+    this.on_up_y = game.input.activePointer.worldY;
 
     this.checkTouch();
   },
