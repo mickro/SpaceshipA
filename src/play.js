@@ -38,6 +38,14 @@ var play_state = {
     var spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     spaceKey.onDown.add(this.skipTuto, this);
 
+    // init touch screen
+    //var touchMove = game.input.addMoveCallback
+    //this.game.input.activePointer.isDown
+
+    this.downHandler = game.input.onDown.add(this.onDownInput, this);
+    this.upHandler = game.input.onUp.add(this.onUpInput, this);
+
+
     // init text
     score = 0;
 
@@ -61,6 +69,56 @@ var play_state = {
     if (best_score > 0 ) {
       this.labelBestScore = game.add.text( x_centred, 410, "BEST SCORE: " + best_score, { font: "20px Arial", fill: "gold", align: "center"} );
       this.labelBestScore.anchor.setTo(0.5, 0.5);
+    }
+  },
+
+  onDownInput: function() {
+    this.on_down_x = game.input.activePointer.clientX;
+    this.on_down_y = game.input.activePointer.clientY;
+  },
+
+  onUpInput: function() {
+    this.on_up_x = game.input.activePointer.clientX;
+    this.on_up_y = game.input.activePointer.clientY;
+
+    this.checkTouch();
+  },
+
+  checkTouch: function () {
+    // test move on Y
+    if (this.on_up_y && this.on_down_y) {
+      var delta_y =  this.on_up_y - this.on_down_y;
+      if( Math.abs(delta_y) > 15 ) {
+        if (delta_y > 0) {
+          if (delta_y > 200) {
+            this.goDown();
+            this.goDown();
+            this.goDown();
+          } else if (delta_y > 60) {
+            this.goDown();
+            this.goDown();
+          } else {
+            this.goDown();
+          }
+            
+        } else {
+          if (-delta_y > 200) {
+            this.goUp();
+            this.goUp();
+            this.goUp();
+          } else if (-delta_y > 60) {
+            this.goUp();
+            this.goUp();
+          } else {
+            this.goUp();
+          }
+        }
+
+        this.on_up_y = undefined;
+        this.on_down_y = undefined;
+      } else {
+        this.skipTuto();
+      }
     }
   },
 
