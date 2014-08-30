@@ -4,7 +4,7 @@ var load_state = {
     game.load.spritesheet('ship', 'assets/ship_sheet.png', 31, 15);
     game.load.image('pipe', 'assets/pipe.png');
     game.load.image('star', 'assets/star.png');
-    game.load.spritesheet('flame', 'assets/flame_sheet.png', 15, 15); 
+    game.load.spritesheet('flame', 'assets/flame_sheet.png', 15, 15);
   },
 
   create: function() {
