@@ -15,9 +15,9 @@ var label_tuto_text = isMobileDevice? "TAP to pilot" : "use UP and DOWN to pilot
 var label_start_text = isMobileDevice? ">>>> >  >  to start" : "press SPACE to start";
 var game;
 
-  game = new Phaser.Game(400, 490, Phaser.AUTO, 'gameDiv');
+game = new Phaser.Game(400, 490, Phaser.AUTO, 'gameDiv');
 
-  
-  game.state.add('load', load_state);
-  game.state.add('play', play_state);
-  game.state.start('load');
+
+game.state.add('load', load_state);
+game.state.add('play', play_state);
+game.state.start('load');

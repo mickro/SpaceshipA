@@ -27,6 +27,10 @@ var play_state = {
     this.ship = game.add.sprite(SHIP_X, SHIP_Y, 'ship');
     this.ship.animations.add('ship_boom', [0, 1, 2, 3]);
     game.physics.arcade.enable(this.ship);
+
+    this.touch = game.add.sprite(-100, -100, 'touch');
+    this.touch.animations.add('touch_start', [0, 1, 2, 3, 4, 0]);
+
    
     this.ship.body.gravity.y = 0;
     this.ship.anchor.setTo(-0.2, 0.5);
@@ -44,8 +48,10 @@ var play_state = {
     spaceKey.onDown.add(this.skipTuto, this);
 
     // init touch screen
-    this.downHandler = game.input.onDown.add(this.onDownInput, this);
-    this.upHandler = game.input.onUp.add(this.onUpInput, this);
+    game.input.onDown.add(this.onDownInput, this);
+    game.input.onUp.add(this.onUpInput, this);
+
+    this.autopilot = false; // on touch usage only
 
     // init text
     score = 0;
@@ -100,8 +106,22 @@ var play_state = {
       if ((Math.abs(delta_y) < MAX_TOUCH_DELTA ) && (delta_x > MAX_TOUCH_DELTA)) {
         this.skipTuto();
       } else if ( (Math.abs(delta_y) < MAX_TOUCH_DELTA) && (Math.abs(delta_x) < MAX_TOUCH_DELTA)) {
-        if (this.on_up_y > this.ship.y + 8) this.goDown()
-          else this.goUp();
+        this.touch.x = this.on_up_x - 32;
+        this.touch.y = this.on_up_y - 32;
+
+        this.autopilot_to_y = this.on_up_y;
+        this.autopilot = true;
+
+        this.touch.animations.play('touch_start', 15, false);
+
+        if (this.on_up_y > this.ship.y + 8)
+        {
+          this.goDown();
+        }
+          else
+        {
+          this.goUp();
+        }
       }
     }
     this.resetTouch();
@@ -133,8 +153,20 @@ var play_state = {
       if (this.ship.angle < 0)
         this.ship.angle += 1;
 
-      if (this.ship.angle > 0)
+      if (this.ship.angle > 0) {
         this.ship.angle -= 1;
+      }
+
+      if (this.autopilot) {
+        if ( (
+            (this.ship.body.y > this.autopilot_to_y) && (this.ship.body.velocity.y > 0)
+          ) || (
+            (this.ship.body.y < this.autopilot_to_y) && (this.ship.body.velocity.y < 0)
+          ) ) {
+          this.autopilot = false;
+          this.ship.body.velocity.y = 0;
+        }
+      }
 
       if (pipe_to_score === true) {
         if ( (this.current_pipe.x + this.current_pipe.width) < this.ship.x) {
@@ -163,6 +195,7 @@ var play_state = {
     if (this.ship.alive == false) return;
     
     this.ship.body.velocity.y += 50;
+
     if (this.ship.body.velocity.y > 250) this.ship.body.velocity.y = 250;
     var animation = game.add.tween(this.ship);
     animation.to({angle: 20}, 100);
